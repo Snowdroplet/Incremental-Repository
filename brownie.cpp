@@ -202,6 +202,30 @@ void Brownie::Progress()
 
     }
 
+    else if(decidedAction == ACTION_DRINK)
+    {
+        decidedSubaction = SUBACTION_DEBUG_DRINK;
+        std::cout << "DEBUG drinking." << std::endl;
+
+        hydration += 40;
+    }
+
+    else if(decidedAction == ACTION_REST)
+    {
+        decidedSubaction = SUBACTION_DEBUG_REST;
+        std::cout << "DEBUG resting." << std::endl;
+
+        energy += 40;
+    }
+
+    else if(decidedAction == ACTION_EAT)
+    {
+        decidedSubaction = SUBACTION_DEBUG_EAT;
+        std::cout << "DEBUG eating." << std::endl;
+
+        nutrition += 40;
+    }
+
     ProgressBiography();
     ProgressPhysicalCondition();
     ProgressPsychologicalCondition();
@@ -237,7 +261,7 @@ void Brownie::EvaluatePhysicalNeeds(float physMod)
     if(effectiveTemperature < favouredTemperature)
     {
         actionPotential[ACTION_COOL] = 0;
-        actionPotential[ACTION_WARM] += 0.5*std::fabs(effectiveTemperature-favouredTemperature);
+        //actionPotential[ACTION_WARM] += 0.2*std::fabs(effectiveTemperature-favouredTemperature);
 
         if(effectiveTemperature < coldComfort)
         {
@@ -245,7 +269,7 @@ void Brownie::EvaluatePhysicalNeeds(float physMod)
 
             if(effectiveTemperature < coldTolerance)
             {
-                actionPotential[ACTION_WARM] += 5*std::fabs(effectiveTemperature-favouredTemperature);
+                actionPotential[ACTION_WARM] += 6*std::fabs(effectiveTemperature-favouredTemperature);
             }
         }
     }
@@ -253,15 +277,15 @@ void Brownie::EvaluatePhysicalNeeds(float physMod)
     if(effectiveTemperature > favouredTemperature)
     {
         actionPotential[ACTION_WARM] = 0;
-        actionPotential[ACTION_COOL] += 0.5*std::fabs(effectiveTemperature-favouredTemperature);
+        //actionPotential[ACTION_COOL] += 0.2*std::fabs(effectiveTemperature-favouredTemperature);
 
         if(effectiveTemperature > heatComfort)
         {
-            actionPotential[ACTION_COOL] += 5*std::fabs(effectiveTemperature-favouredTemperature);
+            actionPotential[ACTION_COOL] += 2*std::fabs(effectiveTemperature-favouredTemperature);
 
             if(effectiveTemperature > heatTolerance)
             {
-                actionPotential[ACTION_COOL] += 5*std::fabs(effectiveTemperature-favouredTemperature);
+                actionPotential[ACTION_COOL] += 6*std::fabs(effectiveTemperature-favouredTemperature);
             }
 
         }
@@ -269,7 +293,68 @@ void Brownie::EvaluatePhysicalNeeds(float physMod)
 
     /// Thirst
 
+    if(hydration < hydrationMax)
+    {
+        //actionPotential[ACTION_DRINK] += 0.1*std::fabs(hydration - hydrationMax);
+
+        if(hydration < thirstyThreshold)
+        {
+            actionPotential[ACTION_DRINK] += 1*std::fabs(hydration - hydrationMax);
+
+            if(hydration < veryHungryThreshold)
+            {
+                actionPotential[ACTION_DRINK] += 3*std::fabs(hydration - hydrationMax);
+            }
+        }
+    }
+    else if(hydration >= hydrationMax)
+    {
+        actionPotential[ACTION_DRINK] = 0;
+    }
+
+    /// Exhaustion
+
+    if(energy < energyMax)
+    {
+        //actionPotential[ACTION_REST] += 0.05*std::fabs(energy - energyMax);
+
+        if(energy < tiredThreshold)
+        {
+            actionPotential[ACTION_REST] += 0.5*std::fabs(energy - energyMax);
+
+            if(energy < veryTiredThreshold)
+            {
+                actionPotential[ACTION_REST] += 1.5*std::fabs(energy - energyMax);
+            }
+        }
+    }
+    else if(energy >= energyMax)
+    {
+        actionPotential[ACTION_REST] = 0;
+    }
+
+
     /// Hunger
+
+    if(nutrition < nutritionMax)
+    {
+        //actionPotential[ACTION_EAT] += 0.025*std::fabs(nutrition - nutritionMax);
+
+        if(nutrition < hungryThreshold)
+        {
+           actionPotential[ACTION_EAT] += 0.25*std::fabs(nutrition - nutritionMax);
+
+           if(nutrition < veryHungryThreshold)
+           {
+                actionPotential[ACTION_EAT] += .75*std::fabs(nutrition - nutritionMax);
+           }
+        }
+    }
+    if(nutrition >= nutritionMax)
+    {
+        actionPotential[ACTION_EAT] = 0;
+    }
+
 
 
 

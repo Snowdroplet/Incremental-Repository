@@ -12,7 +12,7 @@ World::World()
 
     population.push_back(new Brownie("Arec"));
     population.push_back(new Brownie("Bera"));
-    population.push_back(new Brownie("Ceil"));
+    //population.push_back(new Brownie("Ceil"));
     //population.push_back(new Brownie("Dama"));
     //population.push_back(new Brownie("Ewok"));
 

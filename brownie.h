@@ -19,15 +19,16 @@ enum enumActions
     ACTION_SUPPLY    =  1,   // Go to shelter to retrieve items necessary for planned activities.
     ACTION_WARM      =  2,   // Go to nearby shelter or fire or build one.
     ACTION_COOL      =  3,   // Go to nearby shelter.
-    ACTION_EAT       =  4,   //
-    ACTION_SLEEP     =  5,
-    ACTION_TALK      =  6,
-    ACTION_GATHER    =  7,
-    ACTION_HUNT      =  8,
-    ACTION_MAINTAIN  =  9,
-    ACTION_CRAFT     = 10,
+    ACTION_DRINK     =  4,
+    ACTION_EAT       =  5,   //
+    ACTION_REST      =  6,
+    ACTION_TALK      =  7,
+    ACTION_GATHER    =  8,
+    ACTION_HUNT      =  9,
+    ACTION_MAINTAIN  = 10,
+    ACTION_CRAFT     = 11,
 
-    NUM_ACTIONS      = 11
+    NUM_ACTIONS      = 12
 };
 
 enum enumIdleSubactions /// Make sure to add explicit interger values later
@@ -51,6 +52,21 @@ enum enumCoolSubactions
     SUBACTION_DEBUG_COOLING = -1,
 
     SUBACTION_SWIM = 0
+};
+
+enum enumDrinkSubactions
+{
+    SUBACTION_DEBUG_DRINK = -1
+};
+
+enum enumRestSubactions
+{
+    SUBACTION_DEBUG_REST = -1
+};
+
+enum enumEatSubactions
+{
+    SUBACTION_DEBUG_EAT = -1
 };
 
 enum enumTalkSubactions
