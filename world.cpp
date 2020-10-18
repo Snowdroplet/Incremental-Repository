@@ -57,12 +57,12 @@ void World::Progress(int hours)
 
         CalculateTemperature();
 
-        std::cout << "=== Hour " << hour <<  " of Day " << date << " of Month " << month << " || Day " << dayOfYear << " of the current year ===" << std::endl;
-        std::cout << "Air temperature: " << temperature << "C" << std::endl;
+        std::cout << "=== Hour " << hour <<  " of Day " << date << " of Month " << month << " || Day " << dayOfYear << " of the current year." << std::endl;
+        std::cout << "=== Air temperature: " << temperature << "C." << std::endl;
 
         for(std::vector<Brownie*>::iterator it = population.begin(); it != population.end(); ++it)
         {
-            (*it)->SetBaseTemperature(temperature);
+            (*it)->SetTemperature(temperature);
             (*it)->Progress();
 
         }

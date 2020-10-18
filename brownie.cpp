@@ -46,6 +46,8 @@ void Brownie::DefaultGenerationStats()
     purpose = purposeMax = 100;
 
     decidedAction = ACTION_IDLE;
+    decidedSubaction = SUBACTION_IDLE;
+
     foresight = foresightCD = 24;
     planning = planningCD = 24;
 
@@ -65,9 +67,7 @@ void Brownie::ProgressBiography()
 void Brownie::ProgressPhysicalCondition()
 {
 
-    // Passive loss, before accounting for activity
-
-    effectiveTemperature = baseTemperature; // (Account for clothing later)
+    // Passive loss.
     hydration -= 5;
     energy    -= 6;
     nutrition -= 7;
@@ -165,31 +165,58 @@ void Brownie::ProgressPsychologicalCondition()
 void Brownie::Progress()
 {
 
+    std::cout << "    " << name << ":" << std::endl;
+
+    EvaluatePhysicalNeeds(1.0);
+    EvaluateSecurityNeeds(1.0);
+    EvaluatePsychologicalNeeds(1.0);
+    EvaluateActualizationNeeds(1.0);
+
+    DecideAction();
+
+    std::cout << "Action: ";
+
+    if(decidedAction == ACTION_IDLE)
+    {
+        decidedSubaction = SUBACTION_IDLE;
+        std::cout << "Idle." << std::endl;
+    }
+    else if(decidedAction == ACTION_SUPPLY)
+    {
+        std::cout << "Supply." << std::endl;
+    }
+    else if(decidedAction == ACTION_WARM)
+    {
+        decidedSubaction = SUBACTION_DEBUG_WARMING;
+        std::cout << "DEBUG warming." << std::endl;
+
+        effectiveTemperature += 10;
+
+    }
+    else if(decidedAction == ACTION_COOL)
+    {
+        decidedSubaction = SUBACTION_DEBUG_COOLING;
+        std::cout << "DEBUG cooling." << std::endl;
+
+        effectiveTemperature -= 10;
+
+    }
+
     ProgressBiography();
     ProgressPhysicalCondition();
     ProgressPsychologicalCondition();
 
-    DecideAction();
-
-    if(decidedAction == ACTION_IDLE)
-    {
-
-    }
-    else if(decidedAction == ACTION_SUPPLY)
-    {
-
-    }
-
-    std::cout << name << ":" << std::endl;
-    std::cout << "Condition: " << condition << "% || Temp: " << effectiveTemperature << "C || Hydrated: " << hydration << "% || Energy: " << energy << "% || Nutrition: " << nutrition << "%" << std::endl;
+    std::cout << "Condition: " << condition << "% || Temp: " << effectiveTemperature << "C / " << baseTemperature << "C || Hydrated: " << hydration << "% || Energy: " << energy << "% || Nutrition: " << nutrition << "%" << std::endl;
     std::cout << "Sanity: " << sanity << "% || Calm: " << calm << "% || Restful: " << restfulness << "% || Content: " << contentment << "% || Purpose: " << purpose << "%" << std::endl;
+    std::cout << std::endl;
+
 
 }
 
 
-void Brownie::SetBaseTemperature(float t)
+void Brownie::SetTemperature(float t)
 {
-    baseTemperature = t;
+    effectiveTemperature = baseTemperature = t;
 }
 
 void Brownie::Forecast()
@@ -202,7 +229,7 @@ void Brownie::Schedule()
 
 }
 
-void Brownie::EvaluatePhysicalNeeds()
+void Brownie::EvaluatePhysicalNeeds(float physMod)
 {
 
     /// Temperature
@@ -210,55 +237,73 @@ void Brownie::EvaluatePhysicalNeeds()
     if(effectiveTemperature < favouredTemperature)
     {
         actionPotential[ACTION_COOL] = 0;
-        actionPotential[ACTION_WARM] += 0.5*std::abs(effectiveTemperature-favouredTemperature);
+        actionPotential[ACTION_WARM] += 0.5*std::fabs(effectiveTemperature-favouredTemperature);
 
         if(effectiveTemperature < coldComfort)
         {
-            actionPotential[ACTION_WARM] += 2*std::abs(effectiveTemperature-favouredTemperature);
+            actionPotential[ACTION_WARM] += 2*std::fabs(effectiveTemperature-favouredTemperature);
 
             if(effectiveTemperature < coldTolerance)
             {
-                actionPotential[ACTION_WARM] += 5*std::abs(effectiveTemperature-favouredTemperature);
+                actionPotential[ACTION_WARM] += 5*std::fabs(effectiveTemperature-favouredTemperature);
             }
         }
     }
+
     if(effectiveTemperature > favouredTemperature)
     {
         actionPotential[ACTION_WARM] = 0;
-        actionPotential[ACTION_COOL] += 0.5*std::abs(effectiveTemperature-favouredTemperature);
+        actionPotential[ACTION_COOL] += 0.5*std::fabs(effectiveTemperature-favouredTemperature);
 
         if(effectiveTemperature > heatComfort)
         {
-            actionPotential[ACTION_COOL] += 5*std::abs(effectiveTemperature-favouredTemperature);
+            actionPotential[ACTION_COOL] += 5*std::fabs(effectiveTemperature-favouredTemperature);
 
             if(effectiveTemperature > heatTolerance)
             {
-                actionPotential[ACTION_COOL] += 20*std::abs(effectiveTemperature-favouredTemperature);
+                actionPotential[ACTION_COOL] += 5*std::fabs(effectiveTemperature-favouredTemperature);
             }
 
         }
     }
 
+    /// Thirst
+
+    /// Hunger
+
+
+
 }
 
-void Brownie::EvaluateSecurityNeeds()
+void Brownie::EvaluateSecurityNeeds(float secuMod)
 {
 
 }
 
-void Brownie::EvaluatePsychologicalNeeds()
+void Brownie::EvaluatePsychologicalNeeds(float psycMod)
 {
 
 }
 
-void Brownie::EvaluateActualizationNeeds()
+void Brownie::EvaluateActualizationNeeds(float actuMod)
 {
 
 }
 
 void Brownie::DecideAction()
 {
-    /// Physiological urgency
+    float highestPotential = 0;
 
+    for(int i = 0; i < NUM_ACTIONS; i++)
+    {
+        if(actionPotential[i] > highestPotential)
+        {
+            highestPotential = actionPotential[i];
+            decidedAction = i;
+        }
+    }
+
+    if(highestPotential == 0)
+        decidedAction = ACTION_IDLE;
 }
 

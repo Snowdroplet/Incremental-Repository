@@ -2,10 +2,12 @@
 #define BROWNIE_H_INCLUDED
 
 #include <iostream>
+#include <string>
 #include <utility>
 #include <vector>
-#include <string>
+#include <algorithm>
 #include <cmath>
+
 
 
 #include "item.h"
@@ -30,14 +32,25 @@ enum enumActions
 
 enum enumIdleSubactions /// Make sure to add explicit interger values later
 {
-    SUBACTION_MEDITATE,
-    SUBACTION_SHELTER,
+    SUBACTION_IDLE = 0,
+    SUBACTION_MEDITATE = 1,
+    SUBACTION_SHELTER = 2,
 };
 
 enum enumWarmSubactions
 {
-    SUBACTION_BUILD_FIRE,
-    SUBACTION_SIT_FIRE,
+    SUBACTION_DEBUG_WARMING = -1,
+
+    SUBACTION_BUILD_FIRE = 0,
+    SUBACTION_SIT_FIRE = 1,
+
+};
+
+enum enumCoolSubactions
+{
+    SUBACTION_DEBUG_COOLING = -1,
+
+    SUBACTION_SWIM = 0
 };
 
 enum enumTalkSubactions
@@ -96,6 +109,7 @@ class Brownie
 
     /// Schedule, planning, decision making
     int decidedAction;
+    int decidedSubaction;
 
     float actionPotential[NUM_ACTIONS]; // Pressure to perform certain actions.
 
@@ -168,14 +182,14 @@ class Brownie
     void Forecast();
     void Schedule();
 
-    void EvaluatePhysicalNeeds();      // Condition
-    void EvaluateSecurityNeeds();      // Planning ahead
-    void EvaluatePsychologicalNeeds(); // Contentment
-    void EvaluateActualizationNeeds(); // Purpose and mastery
+    void EvaluatePhysicalNeeds(float physMod);      // Condition
+    void EvaluateSecurityNeeds(float secuMod);      // Planning ahead
+    void EvaluatePsychologicalNeeds(float psycMod); // Contentment
+    void EvaluateActualizationNeeds(float actuMod); // Purpose and mastery
 
     void DecideAction();
 
-    void SetBaseTemperature(float t);
+    void SetTemperature(float t);
 
     void DefaultGenerationStats();
 
